@@ -43,10 +43,15 @@ secrets.token_hex(16)
 ```
 
 In app.py, you set it like:
+
   app.secret_key = 'YOUR_SECRET_KEY'
 
 ⚠ Never share your secret key publicly.
 If it leaks, regenerate it using the above command.
+
+
+---
+
 
 **📂Project Structure**
 ```
@@ -67,6 +72,10 @@ Expense-Habit-Tracker/
 │   └── register-image.jpg
 └── README.md
 ```
+
+---
+
+
 **🛠 Installation & Setup**
 
 Clone the repository:
@@ -97,11 +106,19 @@ Open in browser:
 http://127.0.0.1:5000
 ```
 
+
+---
+
+
 **📊 Dataset**
 
 The dataset (expenses.csv) contains:
+
 Monthly Income
+
 Expense categories (Rent, Food, Education, etc.)
+
 Financial Goal (encoded with LabelEncoder)
+
 Spending habit label (Saver, Balanced, Overspender)
 
