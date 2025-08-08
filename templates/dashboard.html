@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard - Expense Habit Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Your original CSS here */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Background animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="3" fill="rgba(255,255,255,0.05)"/><circle cx="50" cy="10" r="1.5" fill="rgba(255,255,255,0.08)"/></svg>') repeat;
+            animation: float 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-100px); }
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .navbar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .navbar a:active {
+            transform: translateY(0);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            color: white;
+            margin-bottom: 35px;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Form Styling */
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: white;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        input, select {
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input:focus, select:focus {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        select option {
+            background: #333;
+            color: white;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0) scale(1);
+        }
+
+        /* Results Section */
+        .result {
+            margin-top: 40px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result p {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .result strong {
+            color: #ffeb3b;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        canvas {
+            max-width: 450px;
+            max-height: 450px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error State */
+        .error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            border-left-color: #ff6b6b;
+        }
+
+        /* Success State */
+        .success {
+            color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+            border-left-color: #4ade80;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .navbar-links {
+                gap: 15px;
+            }
+
+            .container {
+                margin: 20px auto;
+                padding: 0 15px;
+            }
+
+            .dashboard-card {
+                padding: 25px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            form {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            canvas {
+                max-width: 300px;
+                max-height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-card {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            input, select {
+                padding: 12px 15px;
+            }
+
+            button {
+                padding: 14px 30px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        button:focus, input:focus, select:focus {
+            outline: 3px solid rgba(255, 255, 255, 0.5);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar -->
+    <div class="navbar">
+        <h1>💰 Expense Habit Tracker</h1>
+        <div class="navbar-links">
+            <a href="/">Home</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="dashboard-card">
+            <h2>Welcome to Your Dashboard</h2>
+            <form id="expense-form">
+                <div class="form-group">
+                    <label for="income">💵 Monthly Income</label>
+                    <input type="number" id="income" name="Monthly Income" placeholder="Enter your monthly income" required />
+                </div>
+                <div class="form-group">
+                    <label for="food">🍽️ Food Expense</label>
+                    <input type="number" id="food" name="Food" placeholder="Food and dining expenses" required />
+                </div>
+                <div class="form-group">
+                    <label for="rent">🏠 Rent Expense</label>
+                    <input type="number" id="rent" name="Rent" placeholder="Housing and rent costs" required />
+                </div>
+                <div class="form-group">
+                    <label for="shopping">🛍️ Shopping</label>
+                    <input type="number" id="shopping" name="Shopping" placeholder="Shopping expenses" required />
+                </div>
+                <div class="form-group">
+                    <label for="savings">💰 Savings</label>
+                    <input type="number" id="savings" name="Savings" placeholder="Monthly savings" required />
+                </div>
+                <div class="form-group">
+                    <label for="loans">🏦 Loans</label>
+                    <input type="number" id="loans" name="Loans" placeholder="Loan repayments" required />
+                </div>
+                <div class="form-group">
+                    <label for="education">📚 Education</label>
+                    <input type="number" id="education" name="Education" placeholder="Learning and courses" required />
+                </div>
+                <div class="form-group">
+                    <label for="entertainment">🎬 Entertainment</label>
+                    <input type="number" id="entertainment" name="Entertainment" placeholder="Fun and leisure activities" required />
+                </div>
+                <div class="form-group">
+                    <label for="health">🏥 Health</label>
+                    <input type="number" id="health" name="Health" placeholder="Medical and health expenses" required />
+                </div>
+                <div class="form-group">
+                    <label for="goal">🎯 Financial Goal</label>
+                    <select id="goal" name="Financial Goal" required>
+                        <option value="">Select your goal</option>
+                        <option value="Home">🏠 Home</option>
+                        <option value="Car">🚗 Car</option>
+                        <option value="Trip">✈️ Trip</option>
+                        <option value="House">🏡 House</option>
+                        <option value="Education">📚 Education</option>
+                        <option value="Wedding">💍 Wedding</option>
+                        <option value="Jwellery">Jwellery</option>
+                        <!-- Add more goals as you want -->
+                    </select>
+                </div>
+                <div class="full-width">
+                    <button type="submit" id="analyze-btn">🔍 Analyze My Spending</button>
+                </div>
+            </form>
+
+            <div class="result" id="result" style="display:none;"></div>
+            <div class="chart-container" id="chart-container" style="display:none;">
+                <canvas id="expense-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const form = document.getElementById("expense-form");
+        const resultDiv = document.getElementById("result");
+        const chartContainer = document.getElementById("chart-container");
+        const chartCanvas = document.getElementById("expense-chart");
+        const analyzeBtn = document.getElementById("analyze-btn");
+        let chart;
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            analyzeBtn.innerHTML = '🔍 Analyzing... <span class="loading"></span>';
+            analyzeBtn.disabled = true;
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            // Convert necessary fields to integers
+            const keysToInt = [
+                "Monthly Income",
+                "Food",
+                "Rent",
+                "Shopping",
+                "Savings",
+                "Loans",
+                "Education",
+                "Entertainment",
+                "Health",
+                
+            ];
+            keysToInt.forEach((k) => {
+                data[k] = parseInt(data[k]) || 0;
+            });
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+
+                if (result.error) {
+                    resultDiv.style.display = "block";
+                    resultDiv.innerHTML = `<p class="error"><strong>❌ Error:</strong> ${result.error}</p>`;
+                    chartContainer.style.display = "none";
+                    return;
+                }
+
+                resultDiv.style.display = "block";
+                chartContainer.style.display = "flex";
+
+                resultDiv.innerHTML = `
+                    <p class="success"><strong>💡 Spending Habit:</strong> ${result.label}</p>
+                    <p><strong>🎯 Budget Score:</strong> ${result.budget_score}/100</p>
+                    <p><strong>🧠 Smart Tip:</strong> ${result.smart_tip}</p>
+                `;
+
+                // Prepare chart data using submitted expenses
+                const expensesData = {
+                    Food: data["Food"],
+                    Rent: data["Rent"],
+                    Shopping: data["Shopping"],
+                    Savings: data["Savings"],
+                    Loans: data["Loans"],
+                    Education: data["Education"],
+                    Entertainment: data["Entertainment"],
+                    Health: data["Health"],
+                };
+
+                const chartData = {
+                    labels: Object.keys(expensesData),
+                    datasets: [
+                        {
+                            label: "Expenses (₹)",
+                            data: Object.values(expensesData),
+                            backgroundColor: [
+                                "#ff6384",
+                                "#36a2eb",
+                                "#ffce56",
+                                "#4bc0c0",
+                                "#9966ff",
+                                "#ff9f40",
+                                "#8e44ad",
+                                "#e67e22",
+                            ],
+                            borderWidth: 0,
+                            hoverOffset: 4,
+                        },
+                    ],
+                };
+
+                if (chart) {
+                    chart.destroy();
+                }
+
+                chart = new Chart(chartCanvas, {
+                    type: "pie",
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: "bottom",
+                                labels: {
+                                    color: "white",
+                                    padding: 20,
+                                    font: {
+                                        size: 12,
+                                    },
+                                },
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        const label = context.label || "";
+                                        const value = context.parsed || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return `${label}: ₹${value} (${percentage}%)`;
+                                    },
+                                },
+                            },
+                        },
+                    },
+                });
+            } catch (error) {
+                resultDiv.style.display = "block";
+                resultDiv.innerHTML = `<p class="error"><strong>❌ Connection Error:</strong> Unable to analyze your data. Please try again.</p>`;
+                chartContainer.style.display = "none";
+            } finally {
+                analyzeBtn.innerHTML = "🔍 Analyze My Spending";
+                analyzeBtn.disabled = false;
+            }
+        });
+
+        // Input validation feedback
+        const inputs = document.querySelectorAll('input[type="number"]');
+        inputs.forEach((input) => {
+            input.addEventListener("input", function () {
+                if (this.value < 0) {
+                    this.style.borderColor = "#ff6b6b";
+                } else {
+                    this.style.borderColor = "rgba(255, 255, 255, 0.3)";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
