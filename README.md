@@ -40,11 +40,12 @@ We generate it in Python like this:
 ```python
 import secrets
 secrets.token_hex(16)
+```
 
 In app.py, you set it like:
-``
+
 app.secret_key = 'YOUR_SECRET_KEY'
-```
+
 ⚠ Never share your secret key publicly.
 
 If it leaks, regenerate it using the above command.
@@ -69,28 +70,27 @@ Expense-Habit-Tracker/
 └── README.md
 ```
 **🛠 Installation & Setup**
+
 Clone the repository:
 ```
-bash
 git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
 cd YOUR_REPO_NAME
 ```
 
 Create a virtual environment:
 ```
-bash
 python -m venv venv
 venv\Scripts\activate   # Windows
 source venv/bin/activate  # Mac/Linux
 ```
+
 Install dependencies:
 ```
-bash
 pip install -r requirements.txt
 ```
+
 Run the Flask app:
 ```
-bash
 python app.py
 ```
 
@@ -99,7 +99,7 @@ Open in browser:
 http://127.0.0.1:5000
 ```
 
-** 📊 Dataset**
+**📊 Dataset**
 The dataset (expenses.csv) contains:
 
 Monthly Income
