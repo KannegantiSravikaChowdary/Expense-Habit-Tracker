@@ -7,7 +7,7 @@ import os
 
 app = Flask(__name__)
 CORS(app)
-app.secret_key = '18b77bc6bb50e13fe8993a089fd0c9f4'
+app.secret_key = 'your_secret_key_here'
 
 # Load model and encoder
 model = joblib.load("model.pkl")
