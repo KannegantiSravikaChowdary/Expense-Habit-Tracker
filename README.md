@@ -46,6 +46,7 @@ In app.py, you set it like:
 app.secret_key = 'YOUR_SECRET_KEY'
 ```
 ⚠ Never share your secret key publicly.
+
 If it leaks, regenerate it using the above command.
 
 **📂Project Structure**
