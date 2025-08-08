@@ -1,4 +1,30 @@
-**📊 Expense Habit Tracker**
+# 📊 Expense Habit Tracker
+
+The **Expense Habit Tracker** is a Flask-based web application that uses **machine learning** to classify users as **Saver**, **Balanced**, or **Overspender** based on their income, expenses, and financial goals.  
+It also calculates a **budget score**, gives **smart saving tips**, and visualizes spending with a **pie chart**.
+
+---
+
+## 🚀 Features
+- **ML Prediction** – Predicts your spending habit using a **Random Forest Classifier**.  
+- **Budget Score** – 0–100 score to reflect financial health.  
+- **Smart Saving Tips** – Personalized advice based on your prediction.  
+- **Pie Chart** – Visualizes your expense distribution.  
+- **Multiple Goals** – Choose from goals like *Home*, *Car*, *Trip*, *House Construction*, etc.  
+- **Authentication** – Login/Register with JSON-based storage.  
+- **Interactive Dashboard** – Clean, attractive UI with real-time updates.
+
+---
+
+## 🧠 Machine Learning Model
+We use `RandomForestClassifier` from **scikit-learn** because:
+- It handles both categorical and numerical data well.
+- It is robust to overfitting for small/medium datasets.
+- It provides high accuracy for classification problems.
+
+The trained model and encoder are saved as:
+
+##📊 Expense Habit Tracker
 The Expense Habit Tracker is a Flask-based web application with machine learning to classify users as Saver, Balanced, or Overspender based on their income, expenses, and financial goals.
 It also calculates a budget score, gives smart saving tips, and visualizes spending with a pie chart.
 
